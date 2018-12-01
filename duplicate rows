@@ -1,0 +1,23 @@
+Sub AddyourSAN()
+Dim Rng As Range, Dn As Range, n As Long, Ac As Long, nRng As Range
+Set Rng = Range(Range("C5"), Range("C" & Rows.Count).End(xlUp))
+Application.ScreenUpdating = False
+With CreateObject("scripting.dictionary")
+.CompareMode = vbTextCompare
+For Each Dn In Rng
+If Not .Exists(Dn.Value) Then
+.Add Dn.Value, Dn
+Else
+For Ac = 14 To 18
+If Dn.Offset(, Ac) <> "" Then
+.Item(Dn.Value).Offset(, Ac).Value = .Item(Dn.Value).Offset(, Ac).Value & IIf(.Item(Dn.Value).Offset(, Ac).Value _
+= "", Dn.Offset(, Ac).Value, ", " & Dn.Offset(, Ac).Value)
+End If
+Next Ac
+If nRng Is Nothing Then Set nRng = Dn Else Set nRng = Union(nRng, Dn)
+End If
+Next
+End With
+If Not nRng Is Nothing Then nRng.EntireRow.Delete
+Application.ScreenUpdating = True
+End Sub

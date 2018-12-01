@@ -1,0 +1,15 @@
+#!/bin/sh
+# Shell script to monitor the disk space
+# It will send an email to ADMIN if space used is >= 90% 
+ADMIN="userId of the admin"
+# set alert level 90% is default
+ALERT=90
+df -H | grep -vE '^yourfilesystem$' | awk '{ print $5 " " $1 }' | while read output;
+do
+   diskP=$(echo $output | awk '{ print $1}' | cut -d'%' -f1  )
+  partition=$(echo $output | awk '{ print $2 }' )
+  if [ $diskP -ge $ALERT ]; then
+    echo "Running out of the space \"$partition ($diskP%)\" on $(hostname) as on $(date)" | 
+     mail -s "Alert: Almost out of disk space $usep" $ADMIN
+  fi
+done
